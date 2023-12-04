@@ -43,7 +43,6 @@ impl<T: Clone + Debug> Body<T> {
                         break;
                     }
                 }
-                break;
             }
             node = &mut curr.next;
             current_at += 1;
@@ -51,13 +50,13 @@ impl<T: Clone + Debug> Body<T> {
         
         return None;
     }
-
+    
     fn pop(&mut self, last_pos: usize) -> Option<T> {
         return self.remove(last_pos)
     }    
 }
 
-impl<T: Clone + Debug> LinkedList<T> {
+impl<T: Clone + Debug > LinkedList<T> {
     fn new(start: T, end: T) -> Self {
         LinkedList { body: Body::new(start, end), len: Cell::new(2) }
     }
@@ -72,16 +71,21 @@ impl<T: Clone + Debug> LinkedList<T> {
         return self.body.pop(self.len() - 1);
     }
 
+    fn remove(&mut self, pos: usize) -> Option<T> {
+        if pos > self.len() {
+            println!("Outside bounds: {}/{}", pos, self.len());
+            return None;
+        } 
+        return self.body.pop(pos);
+    }
+
     fn out(&self) {
         let mut node = &self.body.next;
         print!("[{:?}]->", self.body.value);
-        let mut prev_val = None;
         while let Some(next) = node {
             print!("[{:?}]->", next.value);
-            prev_val = next.value.clone();
             node = &next.next;
         }
-        // println!("[{:?}]->END", prev_val);
     }
 
     fn len(&self) -> usize {
@@ -97,17 +101,12 @@ mod cases {
 
     #[test]
     fn has_tail() {
-        let mut build = LinkedList::new(String::from("Start"), String::from("End"));
-        build.push(String::from("Middle"));
-        build.push(String::from("Middle"));
-        build.push(String::from("Middle"));
-        build.push(String::from("Middle"));
-        build.push(String::from("Middle"));
-        build.push(String::from("Middle"));
-        build.push(String::from("Middle"));
-
-        let v = build.pop();
-
+        let mut build = LinkedList::new(1, 9);
+    
+        (1..9).rev().into_iter().for_each(|x| {
+            build.push(x);
+        });
+        
         build.out();
     }
 }
